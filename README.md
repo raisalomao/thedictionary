@@ -1,5 +1,5 @@
 # The Dictionary Project
-Descubra a vastidão e complexidade das diferentes língusa através de um projeto científico de dicionário, explorando definições, etimologia e análises linguísticas para enriquecer seu conhecimento linguístico.
+Descubra a vastidão e complexidade das diferentes línguas através de um projeto científico de dicionário, explorando definições, etimologia e análises linguísticas para enriquecer seu conhecimento linguístico.
 
 Contamos com uma coleção de algoritmos de consulta que se conecta a uma ampla variedade de dicionários online distribuídos ao redor do mundo. Esses códigos permitem aos usuários pesquisar informações detalhadas sobre palavras específicas. Fornecemos uma variedade de recursos, incluindo a obtenção de significados precisos, a separação silábica, a identificação de sinônimos relevantes, disponibilização de frases e exemplos contextuais, a etimologia das palavras, a identificação das classes gramaticais pertinentes.
 

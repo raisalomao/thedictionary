@@ -8,7 +8,7 @@ SANITIZE: Dict[str, str] = {
     
 }
 
-URL = "https://www.dicionário.solomon.com.br"
+URL = "https://www.dicionário.solomon.net"
 
 def image_url(name):
     if name.lower() in SANITIZE:

@@ -3,7 +3,7 @@ import json
 import random
 import requests, nltk
 
-from flask import Flask, request
+from flask import Flask, request, render_template
 from flask_caching import Cache
 from datetime import date
 from typing import List, LiteralString
@@ -76,27 +76,11 @@ class BasicInformations:
     def establishConnection(palavra: str):
         return BasicInformations.Portuguese(palavra)
 
-    @app.route('/', methods=['GET'])
+    @app.route('/')
     def palavradodia():
         '''Gera uma palavra para o dia
         '''
-        try:
-            with open("./data.txt", encoding="utf-8") as file:
-                words = file.read().splitlines()
-            random.seed(date.today().day)
-            palavra_do_dia = random.choice(words)
-
-            return json.dumps({
-                'today': f'{palavra_do_dia.capitalize()}', 
-                'results': BasicInformations.Portuguese(unidecode(palavra_do_dia)),                                      
-            }, ensure_ascii=False), 200, {'Content-Type': 'application/json'}
-        
-        except Exception:
-
-            return '<p>\
-            <span style="font-size: 30px;">Adicione uma palavra à URL<br><strong>Exemplo:</strong> \
-            <a href="https://dicionario-solomon.onrender.com/palavra?format=json">\https://dicionario-solomon.onrender.com/palavra?format=json</a> \
-            </span></p>', 404, {'Accept': 'text/plain'}
+        return render_template('home.html')
 
     @app.route('/<palavra>', methods=['GET'])
     def principal(palavra):

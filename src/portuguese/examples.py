@@ -23,7 +23,7 @@ class Examples:
         """
         headers = {'User-Agent': 'Mozilla/5.0', 'Accept-Language': 'pt-BR'}
         try:
-            contentResponse = requests.get(f"https://www.examples.com/{unidecode(palavra).lower()}/", headers=headers)
+            contentResponse = requests.get(f"https://www.pensador.com/{unidecode(palavra).lower()}/", headers=headers)
             if contentResponse.status_code == 404:
                 raise Exception("Sem exemplos disponíveis")
 
@@ -37,7 +37,7 @@ class Examples:
             if all(palavra in s.lower() for s in sentences):
                 examples = [{'sentence': s, 'author': f'- {a}'} for s, a in zip(sentences, authors)]
             else:
-                dicioResponse = requests.get(f"https://www.dicionário.solomon.net/{unidecode(palavra).lower()}/", headers=headers)
+                dicioResponse = requests.get(f"https://www.dicio.com.br/{unidecode(palavra).lower()}/", headers=headers)
                 if dicioResponse.status_code == 404:
                     raise Exception("Sem exemplos disponíveis")
 

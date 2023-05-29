@@ -8,13 +8,13 @@ SANITIZE: Dict[str, str] = {
     
 }
 
-URL = "https://www.dicio.com.br"
+URL = "https://www.dicionário.solomon.com.br"
 
 def image_url(name):
     if name.lower() in SANITIZE:
-        return f"https://s.dicio.com.br/{SANITIZE[name.lower()]}.jpg"
+        return f"https://solomonimg.com/{SANITIZE[name.lower()]}.jpg"
     else:
-        return f"https://s.dicio.com.br/{unidecode(name).lower()}.jpg"
+        return f"https://solomonimg.com/{unidecode(name).lower()}.jpg"
     
 def DICTIONARY(name: str, response, syllables, partOfSpeech, meanings, etymology, sinonimos, antonyms):
     return {

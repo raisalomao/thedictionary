@@ -4,6 +4,8 @@ from unidecode import unidecode
 from typing import LiteralString, List
 from bs4 import BeautifulSoup, Tag
 
+from itertools import islice 
+
 class Examples:
     """Percorre banco de dados em busca de frases e autores a partir de uma palavra.
     """
@@ -54,11 +56,13 @@ class Examples:
                         for s in getSentences.contents if isinstance(s, Tag)]
                         authors = [string.find('em').get_text(strip=True) for string in getSentences.contents if isinstance(string, Tag)]
 
-                    examples = [{'sentence': s, 'author': a} for s, a in zip(sentences, authors)]
+                    examples = [{'sentence': s, 'author': a} for s, a in islice(zip(sentences, authors), 10)]
                 else:
                     examples = "Sem exemplos disponíveis"
-
-            return examples
+                    
+            '''Retorna um número de 10 exemplos, facilmente customizável
+            '''
+            return examples[:10]
         except Exception as e:
             return str(e)
 

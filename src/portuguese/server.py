@@ -1,10 +1,9 @@
 import re
 import json
 import random
-import requests
+import requests, nltk
 
-from constants import SANITIZE, DICTIONARY
-from flask import Flask
+from flask import Flask, request
 from flask_caching import Cache
 from datetime import date
 from typing import List, LiteralString
@@ -13,6 +12,7 @@ from unidecode import unidecode
 from collections import OrderedDict
 
 from nltk.tokenize.sonority_sequencing import SyllableTokenizer
+from constants import URL, SANITIZE, DICTIONARY
 
 app = Flask(__name__)
 cache = Cache(app, config={'CACHE_TYPE': 'simple'})
@@ -31,21 +31,20 @@ class BasicInformations:
 
 
     @staticmethod
-    @cache.cached(timeout=3600)
+    @cache.cached(timeout=7200)
     def Portuguese(palavra: LiteralString = str):
         '''Retorna um `dict` com as informações de uma palavra da Língua Portuguesa.
         '''
 
         headers = {'User-Agent': 'Mozilla/5.0', 'Accept-Language': 'pt-BR'}
-        url = f"https://www.dicio.com.br/{SANITIZE[palavra.lower()]}/" if palavra.lower() in SANITIZE else f"https://www.dicio.com.br/{unidecode(palavra).lower()}/"
+        url = f"{URL}/{SANITIZE.get(palavra.lower(), unidecode(palavra).lower())}/".replace(" ", "-")
 
         response = requests.get(url, headers=headers)
-        response.raise_for_status()
         if response.status_code != 200:
             raise ValueError("Verifique a ortografia")
               
         scrappy = BeautifulSoup(response.content, features='html.parser')
-        name = scrappy.find("h1", itemprop="name").getText(strip=True)
+        name = scrappy.find("h1", itemprop="name").get_text(strip=True)
         baseMeanings = scrappy.find("p", class_=re.compile(r"(^|\s)conjugacao(\s|$)")) or scrappy.find("p", class_=re.compile(r"significado"))
         etymology = baseMeanings.find("span", class_="etim").getText() if baseMeanings.find("span", class_="etim") else 'Sem etimologia disponível'
         
@@ -81,33 +80,47 @@ class BasicInformations:
     def establishConnection(palavra: str):
         return BasicInformations.Portuguese(palavra)
 
-    @app.route('/portuguese/', methods=['GET'])
-    def Palavradodia():
+    @app.route('/', methods=['GET'])
+    def palavradodia():
         '''Gera uma palavra para o dia
         '''
-        with open("./data.txt", encoding="utf-8") as file:
-            words = file.read().splitlines()
-        random.seed(date.today().day)
-        palavra_do_dia = random.choice(words)
+        try:
+            with open("./data.txt", encoding="utf-8") as file:
+                words = file.read().splitlines()
+            random.seed(date.today().day)
+            palavra_do_dia = random.choice(words)
 
-        return json.dumps({
-            
-            'today': f'{palavra_do_dia.capitalize()}', 
-            'info': BasicInformations.Portuguese(unidecode(palavra_do_dia)),                  
-                            
-        }, ensure_ascii=False), 200, {'Content-Type': 'application/json'}
+            return json.dumps({
+                'today': f'{palavra_do_dia.capitalize()}', 
+                'results': BasicInformations.Portuguese(unidecode(palavra_do_dia)),                                      
+            }, ensure_ascii=False), 200, {'Content-Type': 'application/json'}
+        
+        except Exception:
 
-    @app.route('/portuguese/<palavra>', methods=['GET'])
-    def DictionaryGeral(palavra):
+            return '<p>\
+            <span style="font-size: 30px;">Adicione uma palavra à URL<br><strong>Exemplo:</strong> \
+            <a href="https://dicionario-solomon.onrender.com/palavra?format=json">\https://dicionario-solomon.onrender.com/palavra?format=json</a> \
+            </span></p>', 404, {'Accept': 'text/plain'}
+
+    @app.route('/<palavra>', methods=['GET'])
+    def principal(palavra):
         '''Executa todo o conjunto de rotas na API
         '''    
-        typeBody = {'Content-Type': 'application/json'}
         try:
-            getResult = json.dumps(BasicInformations.establishConnection(palavra))
-            return getResult, 200, typeBody
+            format_param = request.args.get('format', default='text')
+            if format_param.lower() == 'json':
+                getResult = json.dumps(BasicInformations.establishConnection(palavra))
+                return getResult, 200, {'Content-Type': 'application/json; charset=utf-8'}
+            else:
+                getResult = BasicInformations.establishConnection(palavra)
+                return str(getResult).encode('utf-8'), 200, {'Content-Type': 'text/plain; charset=utf-8'}
         
-        except Exception as e:
-            return json.dumps({'status' : 404, 'error': f"This word was not found or does not exist in the Portuguese Dictionary  {e}"}), typeBody
+        except Exception:
+            
+            return json.dumps(
+            {'status' : 404, 'error': "This word was not found or does not exist in the Portuguese Dictionary"},
+            ensure_ascii=False), {'Content-Type': 'application/json; charset=utf-8'}
     
 if __name__ == '__main__':
-    app.run()
+    nltk.download(['punkt', 'machado'])
+    app.run(debug=True)

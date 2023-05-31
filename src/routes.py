@@ -1,6 +1,6 @@
 from flask import Flask, request, render_template
 from flask_caching import Cache
-from portuguese.server import BasicInformations
+from portuguese.scrapper import BasicInformations
 
 
 import nltk

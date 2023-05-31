@@ -1,0 +1,1 @@
+gunicorn app: /src/portuguese/setup.py

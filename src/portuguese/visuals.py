@@ -5,6 +5,7 @@ import matplotlib.animation as animation
 
 from typing import List
 
+
 class Visuals:
     """Módulo para processamentos visuais baseados nas
     palavras e recursos obtidos.
@@ -19,8 +20,7 @@ class Visuals:
         integrando seus vetores ao array principal.
         """
 
-        if principal is None:
-            raise ValueError("Adicione a palavra central como parâmetro.")
+        assert principal is not None, "Adicione a palavra central como parâmetro."
         
         if connected == []:
             return
@@ -72,5 +72,5 @@ class Visuals:
             fig.patch.set_facecolor('white')
             ax.set_position([0, 0, 1, 1])
             
-        return ani.save('./visuals/analogic.gif', writer='pillow')
+        return ani.save(f'./portuguese/visuals/{principal.lower()}.gif', writer='pillow')
 

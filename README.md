@@ -6,6 +6,8 @@ Coleção de algoritmos de consulta que se conecta a uma ampla variedade de dici
 Destaca-se pelo uso de `Processamento de Linguagem Natural`. Integrando NLTK (Natural Language Tool Kit), para tarefas de tokenização, classificação e sequenciamento de palavras, para compreender e interpretar o significado e o contexto das palavras pesquisadas. 
 > Representação dos dados em forma hierárquica de árvore, facilitando a navegação, a pesquisa e a manipulação dessas estruturas analíticas. Através do BeautifulSoup e seu parser html.
 
+URL Principal:
+`https://dicionario-solomon.onrender.com/`
 
 Simples modo de uso
 ```py

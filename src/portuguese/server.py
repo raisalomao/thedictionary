@@ -1,12 +1,11 @@
 import re
 import json
-import random
 import requests, nltk
+from visuals import Visuals
 
 from flask import Flask, request, render_template
 from flask_caching import Cache
-from datetime import date
-from typing import List, LiteralString
+from typing import List
 from bs4 import BeautifulSoup
 from unidecode import unidecode
 from collections import OrderedDict
@@ -24,8 +23,9 @@ class BasicInformations:
     classes gramaticais e escrita original padrão no idioma identificado.
     """
 
-    def __init__(self, source = str,
-        language: LiteralString = str,
+    def __init__(self, 
+        source: str = None,
+        language: str = None,
     ) -> None:
         self.language = language
         self.source = source
@@ -33,7 +33,7 @@ class BasicInformations:
 
     @staticmethod
     @cache.cached(timeout=7200)
-    def Portuguese(palavra: LiteralString = str):
+    def Portuguese(palavra = str):
         '''Retorna um `dict` com as informações de uma palavra da Língua Portuguesa.
         '''
 
@@ -47,21 +47,21 @@ class BasicInformations:
         container = BeautifulSoup(response.content, features='html.parser')
         name = container.find("h1", itemprop="name").get_text(strip=True)
         cardmain = container.find("p", class_=re.compile(r"(^|\s)conjugacao(\s|$)")) or container.find("p", class_=re.compile(r"significado"))
-        etymology = cardmain.find("span", class_="etim").text if cardmain.find("span", class_="etim") else 'Sem etimologia disponível'
+        etymology = cardmain.find("span", class_="etim").text if cardmain.find("span", class_="etim") else []
         
         partofspeech = [elem.text for elem in cardmain.find_all("span", class_="cl")] or container.find("p", itemprop="description", class_="significado").text
         if 'Ainda não temos' in partofspeech:
             partofspeech = "Sem classes gramaticais" 
 
         wrapsection = container.find_all("p", class_="adicional sinonimos")
-        sinonimos = [sino.text for sino in wrapsection[0].find_all("a")] if wrapsection else 'Sem sinônimos disponíveis'
-        antonyms = [ant.text for ant in wrapsection[1].find_all("a")] if len(wrapsection) >= 2 else 'Sem antônimos disponíveis'
+        sinonimos = [sino.text for sino in wrapsection[0].find_all("a")] if wrapsection else []
+        antonyms = [ant.text for ant in wrapsection[1].find_all("a")] if len(wrapsection) >= 2 else []
                 
         for span in cardmain.select('span.cl, span.etim'):
             span.extract()
         portdoubt = str(container.find("div", id='desamb').text.strip()).replace('\n', ' ') if container.find("div", id='desamb') else None
         meanings: List[str] = list(
-        OrderedDict.fromkeys([span.get_text() for span in cardmain.select('span') if not (span.get('class') and 'tag' in span.get('class'))])
+        OrderedDict.fromkeys([span.text.replace("[", "").replace("]", ".") for span in cardmain.select('span') if not (span.get('class') and 'tag' in span.get('class'))])
         )
         if portdoubt is not None:     
             meanings.append(portdoubt)
@@ -69,12 +69,9 @@ class BasicInformations:
         titsection = container.find(lambda x: x.name == 'p' and x.get('class') == ['adicional'])
         listsyllable = titsection.find_all("b") if len(titsection.find_all("b")) > 1 else []
         syllables = next((elemento.text for elemento in listsyllable if '-' in elemento.text), '-'.join(SyllableTokenizer().tokenize(name.lower())))
-          
+        
+        Visuals.analogic_sinonimos(name.lower(), sinonimos[:10])
         return DICTIONARY(name, response, syllables, partofspeech, meanings, etymology, sinonimos, antonyms)
-    
-
-    def establishConnection(palavra: str):
-        return BasicInformations.Portuguese(palavra)
 
     @app.route('/')
     def palavradodia():
@@ -89,10 +86,10 @@ class BasicInformations:
         try:
             format_param = request.args.get('format', default='text')
             if format_param.lower() == 'json':
-                getResult = json.dumps(BasicInformations.establishConnection(palavra))
+                getResult = json.dumps(BasicInformations.Portuguese(palavra))
                 return getResult, 200, {'Content-Type': 'application/json; charset=utf-8'}
             else:
-                getResult = BasicInformations.establishConnection(palavra)
+                getResult = BasicInformations.Portuguese(palavra)
                 return str(getResult).encode('utf-8'), 200, {'Content-Type': 'text/plain; charset=utf-8'}
         
         except Exception as e:

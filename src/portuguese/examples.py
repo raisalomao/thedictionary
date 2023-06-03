@@ -26,7 +26,7 @@ class Examples:
         try:
             pensador_resp = requests.get(f"https://www.pensador.com/busca.php?q={palavra.lower()}", headers=headers)
 
-            read = BeautifulSoup(pensador_resp.content, features='html.parser')
+            read = BeautifulSoup(pensador_resp.text, features='html.parser')
             sentence = read.find('div', class_='phrases-list').find_all('p', class_=re.compile(r'\bfrase\b|\bfr\b'))
             author = read.find_all('span', class_="author-name")
 
@@ -37,12 +37,12 @@ class Examples:
                 examples = [{'sentence': s, 'author': f'- {a}'} for s, a in zip(sentences, authors)]
             else:
                 dicioResponse = requests.get(f"https://www.dicio.com.br/pesquisa.php?q={palavra.lower()}".replace(" ", "-"), headers=headers)
-                dicioExamples = BeautifulSoup(dicioResponse.content, features='html.parser')
+                dicioExamples = BeautifulSoup(dicioResponse.text, features='html.parser')
 
                 if 'Busca' in dicioExamples.text:
                     search_examples = dicioExamples.find("ul", class_='resultados').find('a')
                     url = f"https://www.dicio.com.br{search_examples['href']}"
-                    dicioExamples = BeautifulSoup(requests.get(url, headers=headers).content, features='html.parser')
+                    dicioExamples = BeautifulSoup(requests.get(url, headers=headers).text, features='html.parser')
 
                 sentences: List[str] = []
                 authors: List[str] = []

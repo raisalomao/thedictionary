@@ -1,12 +1,12 @@
 from portuguese.examples import Examples
 
 PRINCIPAL_URL = "https://www.dicio.com.br/pesquisa.php?q="
-BASE_URL = "https://www.dicio.com.br"
-HEADERS = {'User-Agent': 'Mozilla/5.0', 'Accept-Language': 'pt-BR'}
+DEFAULT_URL = "https://www.dicio.com.br"
+HEADERS = {'User-Agent': 'Mozilla/5.0'}
     
 def DICTIONARY(
     name: str, 
-    response: any, 
+    response: int, 
     syllables: str, 
     partofspeech: list, 
     meanings: list, 

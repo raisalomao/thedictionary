@@ -73,7 +73,16 @@ class Animations:
             ax.set_aspect('equal', 'box')
             ax.axis('off')
 
-            ax.add_patch(plt.Circle((0.5, 0.5), 0.09, color='orange', alpha=0.8))
+            num = len(connected)
+            vertices = [
+                (0.5 + 0.09 * np.cos(2 * np.pi * i / num), 
+                 0.5 + 0.09 * np.sin(2 * np.pi * i / num)) for i in range(num)]
+
+            ax.add_patch(plt.Polygon(vertices, color='orange', alpha=0.8))
+            
+            if len(connected) <= 1:
+                ax.add_patch(plt.Circle((0.5, 0.5), 0.09, color='orange', alpha=0.8))
+
             ax.text(0.05, 0.05, "thedictionary©", fontsize=10, fontfamily='Courier New', alpha=0.6)
             principal_text = ax.text(0.5, 0.5, principal, ha='center', va='center', fontsize=11, fontfamily='Arial')
 

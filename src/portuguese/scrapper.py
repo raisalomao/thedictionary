@@ -1,3 +1,8 @@
+"""Roteamento principal para processamento de dados 
+dos Dicionários da Língua Portuguesa.
+"""
+
+
 import re
 import warnings
 import requests 
@@ -13,16 +18,28 @@ from portuguese.constants import (
     DEFAULT_URL
     )
 
-from nltk.tokenize import SyllableTokenizer
+from nltk.tokenize import SyllableTokenizer as st
 
 warnings.filterwarnings("ignore", category=UserWarning)
 
+
 class _Connection:
 
-    def _get_container(url, word):
+    def _get_container(url: str, word: str):
         """Promove a conexão com dicionários onlines."""
-        resp = requests.Session().get(url + word, headers=HEADERS)
-        return BeautifulSoup(resp.text, features='html.parser'), resp
+        resp = requests.get(url + word, headers=HEADERS)
+        container = BeautifulSoup(resp.text, 'html.parser')
+
+        if '<div class="found">' in str(container):
+            redirect = next((r['href'] 
+            for r in container.select("ul.resultados a") 
+                if r.select_one("span.list-link").text == word), 
+                container.select_one("ul.resultados a")['href'])
+
+            container = BeautifulSoup(requests.get(
+            f"{DEFAULT_URL}{redirect}", headers=HEADERS).text, 'html.parser')
+
+        return container, resp
 
 
 class BasicInformations:
@@ -49,21 +66,17 @@ class BasicInformations:
 
 
     @staticmethod
-    def Portuguese(palavra = str):
+    def Portuguese(palavra: str):
         """Retorna as informações de uma palavra da Língua Portuguesa."""
 
         container, status = _Connection._get_container(PRINCIPAL_URL, palavra)
-
-        if '<div class="found">' in str(container):
-            otherway = container.find("ul", class_='resultados').find('a')
-            container = BeautifulSoup(requests.Session().get(f"{DEFAULT_URL}{otherway['href']}", 
-            headers=HEADERS).text, features='html.parser')
 
         name = container.find("h1", itemprop="name").get_text(strip=True).lower()
         cardmain = container.find("p", class_=re.compile(r"(^|\s)conjugacao|significado textonovo(\s|$)"))
         etymology = getattr(cardmain.find("span", class_="etim"), 'text', [])
 
-        partofspeech = [ps.text for ps in cardmain.find_all("span", class_="cl")] or container.find("p", itemprop="description").text
+        speech_complement = re.search(r'^.*?\.', container.find("p", itemprop="description").text).group(0)
+        partofspeech = [ps.text for ps in cardmain.find_all("span", class_="cl")] or speech_complement
         if 'Ainda não temos' in partofspeech:
             partofspeech = "Sem classes gramaticais" 
 
@@ -76,12 +89,12 @@ class BasicInformations:
         meanings: List[str] = list(
         OrderedDict.fromkeys([span.text.replace("[", "").replace("]", ".") 
         for span in cardmain.select('span') if not (span.get('class') and 'tag' in span.get('class'))]))
-        additional = str(getattr(container.find("div", id='desamb'), 'text', '')).strip().replace('\n', ' ')
+        additional = str(getattr(container.find("div", id='desamb'), 'text', '')).strip()
         if additional:
-            meanings.append(additional)
+            meanings.append(additional.replace("[", "").replace("]", "."))
 
         titsection = container.find(lambda x: x.name == 'p' and x.get('class') == ['adicional'])
-        syllables = next((l.text for l in titsection.find_all("b", limit=2) if '-' in l.text), '-'.join(SyllableTokenizer().tokenize(name)))
+        syllables = next((l.text for l in titsection.find_all("b", limit=2) if '-' in l.text), '-'.join(st().tokenize(name)))
         animations = Animations.analogic_sinonimos(name, sinonimos[:10])
         final, analogic_animations = DICTIONARY(name, status, syllables, partofspeech, meanings, etymology, sinonimos, antonyms), animations
         if animations:

@@ -3,6 +3,7 @@ palavras e recursos obtidos.
 """
 
 import numpy as np
+import matplotlib as mpl
 import matplotlib.pyplot as plt
 import matplotlib.patches as patches
 import matplotlib.animation as animation
@@ -12,14 +13,29 @@ from pathlib import Path
 
 from dataclasses import dataclass
 
+
 def _checkfile(folder = str, filename = str) -> bool:
-    '''Verifica se já existe um arquivo em um diretório
-    '''
+    """Verifica se já existe um arquivo em um diretório
+    """
     if not all(isinstance(param, str) for param in (folder, filename)):
         raise ValueError('Ambos parâmetros devem ser string.')
     
     filepath = Path(folder) / filename
     return filepath.exists()
+
+def rotate_polygon(vertices, angle):
+    """Rotaciona um polígono em relação à origem (0, 0).
+    """
+    matrix = np.array(
+        [[np.cos(angle), -np.sin(angle)],
+         [np.sin(angle),  np.cos(angle)]]
+    )
+
+    polygon_matrix = np.array(vertices).T
+    polygon_matrix = matrix @ polygon_matrix
+    rotated_vertices = polygon_matrix.T.tolist()
+
+    return rotated_vertices
 
 
 class Images:
@@ -79,12 +95,22 @@ class Animations:
             words: List[plt.Text] = []
 
             for angle, word in zip(angles, connected):
-                x1, y1 = 0.5 + 0.09 * np.cos(angle), 0.5 + 0.09 * np.sin(angle)
-                x2, y2 = 0.5 + (radius - 0.08) * np.cos(angle), 0.5 + (radius - 0.08) * np.sin(angle)
+                x1, y1 = (
+                    0.5 + 0.09 * np.cos(angle), 
+                    0.5 + 0.09 * np.sin(angle)
+                )
+
+                x2, y2 = (
+                    0.5 + (radius - 0.08) * np.cos(angle), 
+                    0.5 + (radius - 0.08) * np.sin(angle)
+                )
                 line, = ax.plot([x1, x2], [y1, y2], 'k-', alpha=0.6)
                 lines.append(line)
 
-                x, y = 0.1 + radius * np.cos(angle), 0.1 + radius * np.sin(angle)
+                x, y = (
+                    0.1 + radius * np.cos(angle), 
+                    0.1 + radius * np.sin(angle)
+                )
                 size = 0.20 if len(max(connected, key=len)) > 13 else 0.15
                 circle = patches.Ellipse((x, y), width=size, height=0.1, color='red', alpha=0.5)
                 ax.add_patch(circle)
@@ -95,17 +121,40 @@ class Animations:
 
             num = len(connected)
             
-            polygon_size = 0.12 if len(principal) > 14 else 0.09
+            polygon_size = 0.125 if len(principal) > 14 else 0.115
 
-            vertices = [
-                (0.5 + polygon_size * np.cos(2 * np.pi * i / num), 
-                 0.5 + polygon_size * np.sin(2 * np.pi * i / num)) for i in range(num)]
-
-            ax.add_patch(plt.Polygon(vertices, color='orange', alpha=0.8))
-            
-            if len(connected) <= 1:
+            if len(connected) <= 2:
                 ax.add_patch(plt.Circle(
-                    (0.5, 0.5), 0.09, color='orange', alpha=0.8))
+                    (0.5, 0.5), 0.09, color='orange', alpha=0.8) )
+
+            if len(connected) == 3:
+                polygon_size = 0.15
+                v = [
+                    (
+                    0.5 + polygon_size * np.cos(2 * np.pi * i / num),
+                    0.5 + polygon_size * np.sin(2 * np.pi * i / num)
+                    ) for i in range(num)
+                ]
+
+                vr = rotate_polygon(v, np.radians(90))
+                vr_centralize = [
+                    (
+                    0.5 + v[0] - np.mean([v[0] for v in vr]),
+                    0.5 + v[1] - np.mean([v[1] for v in vr])
+                    ) for v in vr
+                ]
+                ax.add_patch(plt.Polygon(vr_centralize, color='orange', alpha=0.8))
+            else:
+
+                vertices = [
+                    (
+                    0 + polygon_size * np.cos(5 * np.pi * i / num), 
+                    0 + polygon_size * np.sin(5 * np.pi * i / num)
+                    ) for i in range(num)
+                ]
+
+                ax.add_patch(plt.Polygon(vertices, color='orange', alpha=0.8))
+
 
             ax.text(0.05, 0.05, "thedictionary©", fontsize=10, fontfamily='Courier New', alpha=0.6)
             main_text = ax.text(0.5, 0.5, principal, ha='center', va='center', fontsize=11, fontfamily='Arial')
@@ -116,11 +165,21 @@ class Animations:
             def update_frames(frame):
                 angle = frame / 300 * 2 * np.pi
                 for i, (circle, line, word) in enumerate(zip(circles, lines, words)):
-                    x, y = 0.5 + radius * np.cos(angle + angles[i]), 0.5 + radius * np.sin(angle + angles[i])
+                    x, y = (
+                        0.5 + radius * np.cos(angle + angles[i]), 
+                        0.5 + radius * np.sin(angle + angles[i])
+                    )
                     circle.center = (x, y)
 
-                    x1, y1 = 0.5 + 0.12 * np.cos(angle + angles[i]), 0.5 + 0.12 * np.sin(angle + angles[i])
-                    x2, y2 = 0.5 + (radius - 0.08) * np.cos(angle + angles[i]), 0.5 + (radius - 0.08) * np.sin(angle + angles[i])
+                    x1, y1 = (
+                        0.5 + 0.12 * np.cos(angle + angles[i]), 
+                        0.5 + 0.12 * np.sin(angle + angles[i])
+                    )
+
+                    x2, y2 = (
+                        0.5 + (radius - 0.08) * np.cos(angle + angles[i]), 
+                        0.5 + (radius - 0.08) * np.sin(angle + angles[i])
+                    )
                     line.set_data([x1, x2], [y1, y2])
                     word.set_position((x, y))
 

@@ -148,8 +148,8 @@ class Animations:
 
                 vertices = [
                     (
-                    0 + polygon_size * np.cos(5 * np.pi * i / num), 
-                    0 + polygon_size * np.sin(5 * np.pi * i / num)
+                    0.5 + polygon_size * np.cos(2 * np.pi * i / num), 
+                    0.5 + polygon_size * np.sin(2 * np.pi * i / num)
                     ) for i in range(num)
                 ]
 

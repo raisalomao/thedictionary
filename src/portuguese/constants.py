@@ -20,6 +20,7 @@ def DICTIONARY(
         'results': [
             {
                 'word': name.lower(),
+                'length': len(name.lower()), 
                 'syllables': syllables,
                 'gramaticalClass': partofspeech,
                 'meanings': meanings,

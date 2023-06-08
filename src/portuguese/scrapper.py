@@ -2,7 +2,7 @@
 dos Dicionários da Língua Portuguesa.
 """
 
-
+import os
 import re
 import warnings
 import requests 
@@ -32,20 +32,22 @@ class _Connection:
 
     def _get_container(url: str, word: str):
         """Promove a conexão com dicionários onlines."""
-        resp = requests.get(url + word, headers=HEADERS)
-        container = BeautifulSoup(resp.text, 'html.parser')
+        session = requests.Session()
+        r = session.get(url + word, headers=HEADERS)
+        container = BeautifulSoup(r.text, 'html.parser')
 
         if '<div class="found">' in str(container):
-            redirect = next((r['href'] 
+            redirect = next((i['href'] 
                              
-            for r in container.select("ul.resultados a") 
-                if r.select_one("span.list-link").text == word), 
-                container.select_one("ul.resultados a")['href'])
+                for i in container.select("ul.resultados a") 
+                    if i.select_one("span.list-link").text == word), 
+                    container.select_one("ul.resultados a")['href']
+            )
 
-            container = BeautifulSoup(requests.get(
+            container = BeautifulSoup(session.get(
             f"{DEFAULT_URL}{redirect}", headers=HEADERS).text, 'html.parser')
 
-        return container, resp
+        return container, r
 
 class _FileSanitize:
     """Dicionários salvos em documentos digitais
@@ -64,7 +66,7 @@ class _FileSanitize:
         return filepath.exists()
 
     @classmethod
-    def reading_documents(cls, folder: str, filename: str, key: str
+    def reading_documents(cls, folder: str, filename: str
     ) -> bool:
         """Este é um leitor de arquivos e separador de conteúdo
         desde que uma ``key`` = palavra seja fornecida,
@@ -77,12 +79,22 @@ class _FileSanitize:
         segurança e confiabilidade do contéudo armazenado.
         """
 
+        if './' in folder and '/' in filename:
+            folder = folder.lstrip('./').replace('/', '')
+            filename = filename.lstrip('./').replace('/', '')
+        else:
+            pass
+
+        if filename.endswith(("pdf", "docx")):
+            pass
+
         if '_pt' not in filename:
             return False
 
-        if _FileSanitize._checkfile(folder, filename):
+        if _FileSanitize._checkfile(f"./{folder}", 
+            f"{filename}" + os.path.splitext(filename)[1]):
             return False
-
+        
         filepath = Path(f"./{folder}") / filename
 
         doc = PdfReader(filepath)
@@ -91,12 +103,8 @@ class _FileSanitize:
         for page in doc.pages:
             text = page.extract_text()
             all_text.append(text)
-            extract_text = "\n".join(all_text)
 
-        with open(f"./{folder}/database.txt", 'w', encoding='utf-8') as f:
-            f.write(extract_text)
-
-        return True
+        return print(all_text)
     
     @classmethod
     def correct_text(cls, filename: str):
@@ -138,7 +146,6 @@ class BasicInformations:
         self.source = source
         self._filename = filename
 
-
     def language_detection(self):
         """Identifica o idioma da palavra"""
         pass
@@ -146,8 +153,7 @@ class BasicInformations:
     def dictionary_source(self):
         """Direciona o endereço dos dicionários online"""
         pass
-
-
+    
     @staticmethod
     def Portuguese(palavra: str):
         """Retorna as informações de uma palavra da Língua Portuguesa."""

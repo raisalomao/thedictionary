@@ -36,7 +36,7 @@ class Examples:
             if all(palavra in s.lower() for s in sentences):
                 examples = [{'sentence': s, 'author': f'- {a}'} for s, a in zip(sentences, authors)]
             else:
-                dicioResponse = requests.get(f"https://www.dicio.com.br/pesquisa.php?q={palavra.lower()}".replace(" ", "-"), headers=headers)
+                dicioResponse = requests.get(f"https://www.url.com.br/pesquisa.php?q={palavra.lower()}".replace(" ", "-"), headers=headers)
                 dicioExamples = BeautifulSoup(dicioResponse.text, features='html.parser')
 
                 if 'Busca' in dicioExamples.text:

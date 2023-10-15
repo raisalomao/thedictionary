@@ -6,12 +6,12 @@ Desenvolvi uma apresentação visual apartir dos sinônimos obtidos das palavras
 
 > Representação dos dados em forma hierárquica de árvore, facilitando a navegação, a pesquisa e a manipulação dessas estruturas analíticas. Através do BeautifulSoup e seu parser html.
 
-Descubra a vastidão e complexidade das diferentes línguas através do projeto científico [dicionario.solomon](https://dicionario-solomon.onrender.com/), explorando definições, etimologia e análises linguísticas.
+Descubra a vastidão e complexidade das diferentes línguas através do projeto científico [thedictionary](https://thedictionary.onrender.com/), explorando definições, etimologia e análises linguísticas.
 
 Simples modo de uso
 
 ```py
-https://dicionario-solomon.onrender.com/<palavra>?format=json
+https://thedictionary.onrender.com/<palavra>?format=json
 ```
 
 O formato padrão de resposta é texto, utilize o parâmetro JSON para retornar um formato de dados mais leve e utilizável para outras aplicações.

@@ -23,7 +23,7 @@ https://thedictionary.onrender.com/<palavra>?format=json
 
 ### Exemplos de Resposta Completa
 
-```C
+```py
 {
     "status": 200,
     "language": "portuguese",

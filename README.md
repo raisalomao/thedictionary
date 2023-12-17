@@ -8,10 +8,17 @@ Desenvolvi uma apresentação visual apartir dos sinônimos obtidos das palavras
 
 Descubra a vastidão e complexidade das diferentes línguas através do projeto científico [thedictionary](https://thedictionary.onrender.com/), explorando definições, etimologia e análises linguísticas.
 
-Simples modo de uso
+###Simples modo de uso
 
 ```py
 https://thedictionary.onrender.com/<palavra>?format=json
 ```
+
+###Endpoints e Responses
+
+>  /meanings?format=json
+>  /examples?format=json
+>  /synonyms?format=json
+>  /antonyms?format=json
 
 O formato padrão de resposta é texto, utilize o parâmetro JSON para retornar um formato de dados mais leve e utilizável para outras aplicações.

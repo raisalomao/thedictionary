@@ -21,7 +21,7 @@ https://thedictionary.onrender.com/<palavra>?format=json
 *  /palavra/synonyms?format=json
 *  /palavra/antonyms?format=json
 
-### Exemplos de Resposta
+### Exemplos de Resposta Completa
 
 ```py
 {

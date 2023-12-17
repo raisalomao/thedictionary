@@ -16,7 +16,7 @@ https://thedictionary.onrender.com/<palavra>?format=json
 
 ### Endpoints e Responses
 
->/meanings?format=json\n
+>>>  /meanings?format=json
 >  /examples?format=json
 >  /synonyms?format=json
 >  /antonyms?format=json

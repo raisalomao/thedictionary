@@ -1,7 +1,7 @@
 from portuguese.examples import Examples
 
-PRINCIPAL_URL = "https://www.url.com.br"
-DEFAULT_URL = "https://www.url.com.br"
+PRINCIPAL_URL = "https://www.dicio.com.br/pesquisa.php?q="
+DEFAULT_URL = "https://www.dicio.com.br"
 HEADERS = {'User-Agent': 'Mozilla/5.0'}
     
 def DICTIONARY(
@@ -27,7 +27,7 @@ def DICTIONARY(
                 'etymology': etymology,
                 'sinonimos': sinonimos,
                 'antonyms': antonyms,
-                'examples': Examples.pensador(name.lower())
+                'examples': Examples.pensador(name.lower(), quant=5)
             }
         ]
     }

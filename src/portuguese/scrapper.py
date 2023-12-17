@@ -153,34 +153,50 @@ class BasicInformations:
     def dictionary_source(self):
         """Direciona o endereço dos dicionários online"""
         pass
-    
+
+    @staticmethod
+    def orderMeanings(palavra: str):
+        """Coleta apenas os significados da palavra"""
+
+        container, status = _Connection._get_container(PRINCIPAL_URL, palavra)
+
+        cardmain = container.find("p", class_=re.compile(r"(^|\s)conjugacao|significado textonovo(\s|$)"))
+        for span in cardmain.select('span.cl, span.etim'):
+            span.extract()
+        meanings: List[str] = list(
+        OrderedDict.fromkeys([span.text.replace("[", "").replace("]", ".") 
+            for span in cardmain.select('span') if not (span.get('class') and 'tag' in span.get('class'))]))
+        additional = str(getattr(container.find("div", id='desamb'), 'text', '')).strip()
+        if additional:
+            meanings.append(additional.replace("[", "").replace("]", "."))
+        return meanings        
+
+    @staticmethod
+    def wordsRelated(palavra: str):
+        """Coleta sinonimos e antonimos de uma palavra"""
+
+        container, status = _Connection._get_container(PRINCIPAL_URL, palavra)
+        wrapsection = container.find_all("p", class_="adicional sinonimos", limit=2)
+        sinonimos = [sino.text for sino in wrapsection[0].find_all("a")] if wrapsection else []
+        antonyms  = [ant.text for ant in wrapsection[1].find_all("a")] if len(wrapsection) >= 2 else []
+
+        return sinonimos, antonyms
+
     @staticmethod
     def Portuguese(palavra: str):
         """Retorna as informações de uma palavra da Língua Portuguesa."""
 
         container, status = _Connection._get_container(PRINCIPAL_URL, palavra)
 
-        name = container.find("h1", itemprop="name").get_text(strip=True).lower()
+        name = container.find("h1").text.strip()
         cardmain = container.find("p", class_=re.compile(r"(^|\s)conjugacao|significado textonovo(\s|$)"))
         etymology = getattr(cardmain.find("span", class_="etim"), 'text', [])
-
-        speech_complement = re.search(r'^.*?\.', container.find("p", itemprop="description").text).group(0)
-        partofspeech = [ps.text for ps in cardmain.find_all("span", class_="cl")] or speech_complement
+        partofspeech = [ps.text for ps in cardmain.find_all("span", class_="cl")] or 'None'
         if 'Ainda não temos' in partofspeech:
             partofspeech = "Sem classes gramaticais" 
 
-        wrapsection = container.find_all("p", class_="adicional sinonimos", limit=2)
-        sinonimos = [sino.text for sino in wrapsection[0].find_all("a")] if wrapsection else []
-        antonyms  = [ant.text for ant in wrapsection[1].find_all("a")] if len(wrapsection) >= 2 else []
-                    
-        for span in cardmain.select('span.cl, span.etim'):
-            span.extract()
-        meanings: List[str] = list(
-        OrderedDict.fromkeys([span.text.replace("[", "").replace("]", ".") 
-        for span in cardmain.select('span') if not (span.get('class') and 'tag' in span.get('class'))]))
-        additional = str(getattr(container.find("div", id='desamb'), 'text', '')).strip()
-        if additional:
-            meanings.append(additional.replace("[", "").replace("]", "."))
+        sinonimos, antonyms = BasicInformations.wordsRelated(palavra)
+        meanings = BasicInformations().orderMeanings(palavra)
 
         titsection = container.find(lambda x: x.name == 'p' and x.get('class') == ['adicional'])
         syllables = next((l.text for l in titsection.find_all("b", limit=2) if '-' in l.text), '-'.join(st().tokenize(name)))
@@ -190,5 +206,3 @@ class BasicInformations:
             return final, analogic_animations
                     
         return final
-    
-

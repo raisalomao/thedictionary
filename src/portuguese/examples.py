@@ -10,15 +10,16 @@ class Examples:
     autores a partir de uma palavra.
     """
 
-    def __init__(self, source = str,
+    def __init__(self, 
+        source = str,
         language: LiteralString = str,
-        ) -> None:
+    ) -> None:
         self.language = language
         self.source = source
 
 
     @staticmethod
-    def pensador(palavra: str):
+    def pensador(palavra: str, quant: int):
         """Faz uma busca de frases na fonte `Pensador`.
         """
 
@@ -36,7 +37,7 @@ class Examples:
             if all(palavra in s.lower() for s in sentences):
                 examples = [{'sentence': s, 'author': f'- {a}'} for s, a in zip(sentences, authors)]
             else:
-                dicioResponse = requests.get(f"https://www.url.com.br/pesquisa.php?q={palavra.lower()}".replace(" ", "-"), headers=headers)
+                dicioResponse = requests.get(f"https://www.dicio.com.br/pesquisa.php?q={palavra.lower()}".replace(" ", "-"), headers=headers)
                 dicioExamples = BeautifulSoup(dicioResponse.text, features='html.parser')
 
                 if 'Busca' in dicioExamples.text:
@@ -59,14 +60,12 @@ class Examples:
                         for s in getSentences.contents if isinstance(s, Tag)]
                         authors = [string.find('em').get_text(strip=True) for string in getSentences.contents if isinstance(string, Tag)]
 
-                    examples = [{'sentence': s, 'author': a} for s, a in islice(zip(sentences, authors), 5)]
+                    examples = [{'sentence': s, 'author': a} for s, a in islice(zip(sentences, authors), quant)]
                 else:
                     return "Sem exemplos disponíveis"
                     
-            '''Retorna um número de 5 exemplos, facilmente customizável
+            '''Retorna um número de 5 exemplos como padrão, facilmente customizável
             '''
-            return examples[:5]
+            return examples[:quant]
         except Exception as e:
             return str(e)
-
-

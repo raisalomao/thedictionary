@@ -57,7 +57,7 @@ class Images:
         """Retorna a imagem de apresentação de
         uma palavra.
         """
-        pass
+        pass 
 
 
 @dataclass
@@ -77,7 +77,7 @@ class Animations:
         """
         assert principal is not None, "Adicione a palavra central como parâmetro."
 
-        if _checkfile("./src/visuals/analogic/", f"{str(principal).lower()}.gif"):
+        if _checkfile("./visuals/analogic/", f"{str(principal).lower()}.gif"):
             return
 
         if not connected:
@@ -189,6 +189,6 @@ class Animations:
 
             fig.patch.set_facecolor('white')
             ax.set_position([0, 0, 1, 1])
-            filepath = Path("./src/visuals/analogic") / f"{principal.lower()}.gif"
+            filepath = Path("./visuals/analogic") / f"{principal.lower()}.gif"
 
         return ani.save(filepath, writer='pillow')

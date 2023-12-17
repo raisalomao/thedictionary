@@ -16,9 +16,9 @@ https://thedictionary.onrender.com/<palavra>?format=json
 
 ### Endpoints e Responses
 
-*  /meanings?format=json
-*  /examples?format=json
-*  /synonyms?format=json
-*  /antonyms?format=json
+*  /<palavra>/meanings?format=json
+*  /<palavra>/examples?format=json
+*  /<palavra>/synonyms?format=json
+*  /<palavra>/antonyms?format=json
 
 O formato padrão de resposta é texto, utilize o parâmetro JSON para retornar um formato de dados mais leve e utilizável para outras aplicações.

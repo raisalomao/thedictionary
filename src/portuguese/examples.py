@@ -25,7 +25,7 @@ class Examples:
 
         headers = {'User-Agent': 'Mozilla/5.0', 'Accept-Language': 'pt-BR'}
         try:
-            pensador_resp = requests.get(f"https://www.pensador.com/busca.php?q={palavra.lower()}", headers=headers)
+            pensador_resp = requests.get(f"https://www.examples.com/busca.php?q={palavra.lower()}", headers=headers)
 
             read = BeautifulSoup(pensador_resp.text, features='html.parser')
             sentence = read.find('div', class_='phrases-list').find_all('p', class_=re.compile(r'\bfrase\b|\bfr\b'))

@@ -84,4 +84,4 @@ https://thedictionary.onrender.com/palavra/frases?format=json
 
 É possível determinar quantas frases devem ser retornadas utilizando o parâmetro opicional `quant=<valor>`, por padrão a API retorna 5 frases com seus respectivos autores.
 
-Solicite desta forma (https://thedictionary.onrender.com/palavra/frases?quant=<valorInteiro>&format=json
+Solicite desta forma https://thedictionary.onrender.com/palavra/frases?quant=valorInteiro&format=json

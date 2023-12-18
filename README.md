@@ -124,4 +124,7 @@ Solicite desta forma https://thedictionary.onrender.com/palavra/frases?quant=val
     "evidente",
 ]
 ```
+
+Criando uma representação visual com os sinônimos. A quantidade de ramificações e o tipo de geometria que se encontra a palavra solicitada varia de acordo com a quantidade de sinonimos que possue a palavra. No caso da palavra `desenvolvimento`, obtivemos o máximo e limite de 9 sinônimos para a visualização. Observe o exemplo abaixo:
+
 ![Apresentação visual dos sinônimos](https://i.imgur.com/hSizatG.gif)

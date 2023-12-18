@@ -124,4 +124,4 @@ Solicite desta forma https://thedictionary.onrender.com/palavra/frases?quant=val
     "evidente",
 ]
 ```
-!https://i.imgur.com/hSizatG.gif
+![Apresentação visual dos sinônimos](https://i.imgur.com/hSizatG.gif)

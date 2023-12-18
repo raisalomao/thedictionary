@@ -63,3 +63,25 @@ https://thedictionary.onrender.com/<palavra>?format=json
 ```
 
 O formato padrão de resposta é texto, utilize o parâmetro JSON para retornar um formato de dados mais leve e utilizável para outras aplicações.
+
+### Retornando uma lista de frases que possuem a palavra
+
+https://thedictionary.onrender.com/palavra/frases?format=json
+
+```json
+[
+    {
+        "sentence": "A palavra é prata, o silêncio é ouro.",
+        "author": "- Provérbio Chinês"
+    },
+    {
+        "sentence": "Há três coisas na vida que nunca voltam atrás: a flecha lançada, a palavra pronunciada e a oportunidade perdida.",
+        "author": "- desconhecido"
+    }
+],
+...
+```
+
+É possível determinar quantas frases devem ser retornadas utilizando o parâmetro opicional `quant=<valor>`, por padrão a API retorna 5 frases com seus respectivos autores.
+
+Solicite desta forma (https://thedictionary.onrender.com/palavra/frases?quant=<valorInteiro>&format=json

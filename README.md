@@ -62,7 +62,7 @@ https://thedictionary.onrender.com/<palavra>?format=json
 }
 ```
 
-O formato padrão de resposta é texto, utilize o parâmetro JSON para retornar um formato de dados mais leve e utilizável para outras aplicações.
+O formato padrão de resposta é texto, utilize o parâmetro JSON para retornar um formato de dados mais leve e utilizável para outras aplicações. O endpoint padrão retorna todos os atributos possíveis de uma palavra, incluindo sua separação silábica.
 
 ### Retornando uma lista de frases que possuem a palavra
 
@@ -85,3 +85,42 @@ https://thedictionary.onrender.com/palavra/frases?format=json
 É possível determinar quantas frases devem ser retornadas utilizando o parâmetro opicional `quant=<valor>`, por padrão a API retorna 5 frases com seus respectivos autores.
 
 Solicite desta forma https://thedictionary.onrender.com/palavra/frases?quant=valorInteiro&format=json
+
+### Solicitando sinônimos e antônimos
+
+>  /palavra/synonyms?format=json
+
+```json
+[
+    "termo",
+    "vocábulo",
+    "frase",
+    "declaração",
+    "elemento",
+    "verbo",
+    "verbete",
+    "lema",
+    "lexema",
+    "linguagem",
+    "fala",
+    "expressão",
+]
+```
+
+> /escuro/antonyms?format=json
+
+```json
+[
+    "claro",
+    "brilhante",
+    "luz",
+    "branco",
+    "alvo",
+    "alvura",
+    "alegre",
+    "contente",
+    "bonito",
+    "sereno",
+    "evidente",
+]
+```

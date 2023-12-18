@@ -1,7 +1,7 @@
 from portuguese.examples import Examples
 
-PRINCIPAL_URL = "https://www.dicio.com.br/pesquisa.php?q="
-DEFAULT_URL = "https://www.dicio.com.br"
+PRINCIPAL_URL = "https://www.url.com.br/pesquisa.php?q="
+DEFAULT_URL = "https://www.url.com.br"
 HEADERS = {'User-Agent': 'Mozilla/5.0'}
     
 def DICTIONARY(

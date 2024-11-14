@@ -16,10 +16,10 @@ https://thedictionary.onrender.com/<palavra>?format=json
 
 ### Endpoints e Responses
 
-*  /palavra/meanings?format=json
-*  /palavra/examples?format=json
-*  /palavra/synonyms?format=json
-*  /palavra/antonyms?format=json
+*  /<palavra>/meanings?format=json
+*  /<palavra>/examples?format=json
+*  /<palavra>/synonyms?format=json
+*  /<palavra>/antonyms?format=json
 
 ### Exemplos de Resposta Completa
 
